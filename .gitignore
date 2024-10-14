@@ -1,3 +1,10 @@
+# Ignorar env_challenge (entorno virtual)
+env_challenge/
+# Ignorar archivos de modelo
+model.pkl
+# Ignorar directorio de reportes
+reports/
+
 # Python
 *.pyc
 *.pyo
