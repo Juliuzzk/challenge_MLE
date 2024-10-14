@@ -113,14 +113,26 @@ class DelayModel:
     def is_high_season(fecha):
         fecha_año = int(fecha.split("-")[0])
         fecha = datetime.strptime(fecha, "%Y-%m-%d %H:%M:%S")
+
         range1_min = datetime.strptime("15-Dec", "%d-%b").replace(year=fecha_año)
-        range1_max = datetime.strptime("31-Dec", "%d-%b").replace(year=fecha_año)
+        range1_max = datetime.strptime("31-Dec 23:59:59", "%d-%b %H:%M:%S").replace(
+            year=fecha_año
+        )
+
         range2_min = datetime.strptime("1-Jan", "%d-%b").replace(year=fecha_año)
-        range2_max = datetime.strptime("3-Mar", "%d-%b").replace(year=fecha_año)
+        range2_max = datetime.strptime("3-Mar 23:59:59", "%d-%b %H:%M:%S").replace(
+            year=fecha_año
+        )
+
         range3_min = datetime.strptime("15-Jul", "%d-%b").replace(year=fecha_año)
-        range3_max = datetime.strptime("31-Jul", "%d-%b").replace(year=fecha_año)
+        range3_max = datetime.strptime("31-Jul 23:59:59", "%d-%b %H:%M:%S").replace(
+            year=fecha_año
+        )
+
         range4_min = datetime.strptime("11-Sep", "%d-%b").replace(year=fecha_año)
-        range4_max = datetime.strptime("30-Sep", "%d-%b").replace(year=fecha_año)
+        range4_max = datetime.strptime("30-Sep 23:59:59", "%d-%b %H:%M:%S").replace(
+            year=fecha_año
+        )
 
         if (
             (fecha >= range1_min and fecha <= range1_max)
@@ -195,7 +207,7 @@ class DelayModel:
 # For testing purposes
 def main():
     model = DelayModel()
-    data = pd.read_csv(filepath_or_buffer="../data/data.csv", low_memory=False)
+    # data = pd.read_csv(filepath_or_buffer="../data/data.csv", low_memory=False)
 
 
 if __name__ == "__main__":
