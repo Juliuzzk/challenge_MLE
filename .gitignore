@@ -1,0 +1,94 @@
+# Ignorar env_challenge (entorno virtual)
+env_challenge/
+# Ignorar archivos de modelo
+model.pkl
+# Ignorar directorio de reportes
+reports/
+
+# Python
+.python_version
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.env
+*.env.*
+*.venv
+venv/
+ENV/
+env/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+pytestdebug.log
+
+# Environments
+.env
+.venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+
+# Log files
+*.log
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+# Usually these files are written by a python script from a template
+# before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test results
+test-output/
+junit-xml/
+
+# MyPy cache
+.mypy_cache/
+
+# Pyre type checker
+.pyre/
+

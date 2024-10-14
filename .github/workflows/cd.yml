@@ -1,0 +1,42 @@
+name: "Continuous Delivery"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Set Google Cloud Project
+        run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker southamerica-west1-docker.pkg.dev
+
+      - name: Build and push Docker image
+        run: |
+          docker buildx build --platform linux/amd64 -t southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:latest .
+          docker push southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy challenge-mle \
+            --image southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:latest \
+            --platform managed \
+            --region southamerica-west1 \
+            --allow-unauthenticated \
+            --project ${{secrets.GCP_PROJECT_ID}}
