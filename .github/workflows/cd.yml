@@ -3,15 +3,14 @@ name: "Continuous Delivery"
 on:
   push:
     branches:
-      - dev
+      - main
   pull_request:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ success() }} # Solo se ejecuta si el CI tuvo éxito
 
     steps:
       - name: Checkout code
