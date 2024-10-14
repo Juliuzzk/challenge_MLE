@@ -1,17 +1,36 @@
 from datetime import datetime
 from typing import List, Tuple, Union
+from sklearn.model_selection import train_test_split
 
 import pandas as pd
 import xgboost as xgb
+import numpy as np
+import pickle as ple
+
+THRESHOLD = 15
+FILENAME = "model.pkl"
 
 
 class DelayModel:
     def __init__(self):
-        self._model = None  # Model should be saved in this attribute.
+        self._model = xgb.XGBClassifier()
+        self._features = [
+            "OPERA_Latin American Wings",
+            "MES_7",
+            "MES_10",
+            "OPERA_Grupo LATAM",
+            "MES_12",
+            "TIPOVUELO_I",
+            "MES_4",
+            "MES_11",
+            "OPERA_Sky Airline",
+            "OPERA_Copa Air",
+        ]
+        # self._model = self.load_model(FILENAME)
 
-    def preprocess(self, data: pd.DataFrame, target_column: str = None) -> Union(
-        Tuple[pd.DataFrame, pd.DataFrame], pd.DataFrame
-    ):
+    def preprocess(
+        self, data: pd.DataFrame, target_column: str = None
+    ) -> Union[Tuple[pd.DataFrame, pd.DataFrame], pd.DataFrame]:
         """
         Prepare raw data for training or predict.
 
@@ -25,10 +44,6 @@ class DelayModel:
             pd.DataFrame: features.
         """
 
-        data["high_season"] = data["Fecha-I"].apply(self.is_high_season)
-        data["min_diff"] = data.apply(self.get_min_diff, axis=1)
-        data["period_day"] = data["Fecha-I"].apply(self.get_period_day)
-
         features = pd.concat(
             [
                 pd.get_dummies(data["OPERA"], prefix="OPERA"),
@@ -38,11 +53,21 @@ class DelayModel:
             axis=1,
         )
 
-        if target_column:
-            target = data[target_column]
-            return features, target
+        valid_features = list(set(self._features).intersection(set(features.columns)))
+        missing_features = list(set(self._features).difference(set(features.columns)))
 
-        return features
+        # get valid features and fill missin with  0 due to one-hot encoding
+        features = features[valid_features]
+        features[missing_features] = 0
+
+        if target_column is None:
+            return features[self._features]
+
+        else:
+            data["min_diff"] = data.apply(self.get_min_diff, axis=1)
+            data["delay"] = np.where(data["min_diff"] > THRESHOLD, 1, 0)
+
+            return (features[self._features], data["delay"].to_frame())
 
     def fit(self, features: pd.DataFrame, target: pd.DataFrame) -> None:
         """
@@ -53,15 +78,20 @@ class DelayModel:
             target (pd.DataFrame): target.
         """
 
-        n_y0 = len(target[target == 0])
-        n_y1 = len(target[target == 1])
+        x_train, x_test, y_train, y_test = train_test_split(
+            features, target, test_size=0.33, random_state=42
+        )
+
+        n_y0 = int((target == 0).sum())
+        n_y1 = int((target == 1).sum())
         scale = n_y0 / n_y1
-        print(scale)
 
         self._model = xgb.XGBClassifier(
             random_state=1, learning_rate=0.01, scale_pos_weight=scale
         )
-        self._model.fit(features, target)
+        self._model.fit(x_train, y_train)
+
+        self.save_model(FILENAME)
 
     def predict(self, features: pd.DataFrame) -> List[int]:
         """
@@ -74,11 +104,11 @@ class DelayModel:
             (List[int]): predicted targets.
         """
 
-        if self._model is not None:
-            # We use the method predict of trained model returned in the fit method
-            return self._model.predict(features).tolist()
-        else:
-            raise ValueError("ERROR: the modal has not been trained yet.")
+        self._model = self.load_model(FILENAME)
+
+        predictions = self._model.predict(features)
+
+        return predictions.tolist()
 
     @staticmethod
     def is_high_season(fecha):
@@ -150,3 +180,29 @@ class DelayModel:
             date_time > night_min and date_time < night_max
         ):
             return "noche"
+
+    def save_model(self, filename):
+        with open(filename, "wb") as fp:
+            ple.dump(self._model, fp)
+
+    def load_model(self, filename: str):
+        try:
+            with open(filename, "rb") as fp:
+                return ple.load(fp)
+        except FileNotFoundError:
+            return None
+
+
+# For testing purposes
+def main():
+    model = DelayModel()
+    data = pd.read_csv(filepath_or_buffer="../data/data.csv", low_memory=False)
+
+    features = model.preprocess(data)
+
+    # save
+    # model.save_model("models")
+
+
+if __name__ == "__main__":
+    main()
