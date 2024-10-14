@@ -1,13 +1,15 @@
 name: "Continuous Delivery"
 
 on:
-  push:
-    branches:
-      - dev
+  workflow_run:
+    workflows: ["Continuous Integration"] # Nombre del workflow de CI
+    types:
+      - completed
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ success() }} # Solo se ejecuta si el CI tuvo éxito
 
     steps:
       - name: Checkout code
