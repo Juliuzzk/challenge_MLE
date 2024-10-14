@@ -6,6 +6,7 @@ model.pkl
 reports/
 
 # Python
+.python_version
 *.pyc
 *.pyo
 *.pyd
