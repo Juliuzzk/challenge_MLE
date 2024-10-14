@@ -30,13 +30,13 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:${{env.GITHUB_SHA}} .
-          docker push southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:${{env.GITHUB_SHA}}
+          docker buildx --platform linux/amd64 build -t southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:latest .
+          docker push southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:latest
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy challenge-mle \
-            --image southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:${{env.GITHUB_SHA}} \
+            --image southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:latest \
             --platform managed \
             --region southamerica-west1 \
             --allow-unauthenticated \
