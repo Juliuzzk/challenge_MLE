@@ -26,7 +26,6 @@ class DelayModel:
             "OPERA_Sky Airline",
             "OPERA_Copa Air",
         ]
-        # self._model = self.load_model(FILENAME)
 
     def preprocess(
         self, data: pd.DataFrame, target_column: str = None
@@ -197,11 +196,6 @@ class DelayModel:
 def main():
     model = DelayModel()
     data = pd.read_csv(filepath_or_buffer="../data/data.csv", low_memory=False)
-
-    features = model.preprocess(data)
-
-    # save
-    # model.save_model("models")
 
 
 if __name__ == "__main__":
