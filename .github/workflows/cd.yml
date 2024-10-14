@@ -30,7 +30,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker buildx --platform linux/amd64 build -t southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:latest .
+          docker buildx build --platform linux/amd64 -t southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:latest .
           docker push southamerica-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/challenge_mle/challenge-mle:latest
 
       - name: Deploy to Cloud Run
