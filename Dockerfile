@@ -8,6 +8,9 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y build-essential gcc libssl-dev
 
+# Define environment variable PORT for GCP
+ENV PORT 8080
+
 # Copy requirements files for the container
 COPY requirements.txt ./
 
@@ -17,8 +20,5 @@ RUN pip install -r requirements.txt
 # Copy the challenge folder project
 COPY ./challenge ./challenge
 
-# Expose port
-EXPOSE 8000
-
 # Run the application inside the container
-CMD ["uvicorn", "challenge.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD uvicorn challenge.api:app --host 0.0.0.0 --port $PORT
