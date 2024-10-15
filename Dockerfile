@@ -18,7 +18,7 @@ COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
 # Copy the challenge folder project
-COPY ./challenge ./challenge
+COPY . .
 
 # Run the application inside the container
-CMD uvicorn challenge.api:app --host 0.0.0.0 --port $PORT
+CMD uvicorn challenge.api:app --host 0.0.0.0 --port $PORT --reload
